@@ -1,8 +1,8 @@
 #Browser Compatability Checker
-##Created by: kittcoldfire (Philip Tucker)
-##Date: November 23,2012
+###Created by: kittcoldfire (Philip Tucker)
+###Date: November 23,2012
 
-##Description:
+###Description:
 At work the higher ups decided we needed to know certain aspects of a user's browser to check compatability to make sure they met at least our minimum standards. I searched the internet for quite a bit to get information and never found an all in one compatability check, so I decided to create my own and put it out there incase anyone else needed to check for these same things.
 
 I've tried to make it as configurable as possible so you can easily only display the information you want, just follow the instructions and you'll have it up and running in no time!
