@@ -35,6 +35,9 @@ var compatibility = (function() {
 		//Popup options
 		self.popup_heading = options.popup_heading || 'Popup Blocker: ';
 
+		//ActiveX options
+		self.activeX_heading = options.activeX_heading || 'ActiveX: ';
+
 		var elements_to_display = self.display.split(",");
 
 		for(x = 0; x < elements_to_display.length; x++) {
@@ -47,7 +50,11 @@ var compatibility = (function() {
 			}
 
 			if(elements_to_display[x] == 'popup') {
-				checkPopupBlocker();
+				getPopupBlockerEnabled();
+			}
+
+			if(elements_to_display[x] == 'activeX') {
+				getActiveXEnabled();
 			}
 
 			check_requirement();
@@ -69,8 +76,12 @@ var compatibility = (function() {
 		add_to_display.javascript = 'true';
 	}
 
-	var checkPopupBlocker = function checkPopupBlocker() {
+	var getPopupBlockerEnabled = function checkPopupBlocker() {
 		add_to_display.popup = 'true';
+	}
+
+	var getActiveXEnabled = function getActiveXEnabled() {
+		add_to_display.activeX = 'true';
 	}
 
 
@@ -151,6 +162,20 @@ var compatibility = (function() {
 	        }
 
 	        add_to_display.popup = null;
+		}
+
+		if(add_to_display.activeX != '' && add_to_display.activeX != null) {
+			heading = self.activeX_heading;
+			
+			if(typeof(window.ActiveXObject)=="undefined"){
+			      message = "Browser Not Supported";
+			      image = self.not_supported_image;
+			  } else {
+			      message = "Enabled";
+			      image = self.pass_image;
+			  }
+
+			add_to_display.activex = null;
 		}
 
 		create_div_row(heading, message, image);
