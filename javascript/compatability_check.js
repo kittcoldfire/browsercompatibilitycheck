@@ -2,7 +2,8 @@ var compatibility = (function() {
 
 	var self = this;
 	var add_to_display = [];
-	var configured_display = null;
+	var configured_display = [];
+	var popup_position = null;
 	/*
 		@param:div_id - specifies which div is going to be replaced with the content
 		@param:options.display - items that we want to display, choices are [flash, javascript, activeX, browser, popup]
@@ -17,7 +18,7 @@ var compatibility = (function() {
 		document.getElementById(self.div_id).className="";
 
 		//Display options
-		self.display = options.display || 'flash,javascript,activeX,browser,popup';
+		self.display = options.display || 'flash,javascript,browser,activeX,popup';
 		self.display_images = options.display_images || options.display;
 
 		//Image options
@@ -38,7 +39,12 @@ var compatibility = (function() {
 		//ActiveX options
 		self.activeX_heading = options.activeX_heading || 'ActiveX: ';
 
+		//Browser options
+		self.browser_heading = options.browser_heading || 'Browser: ';
+		self.supported_browsers = options.supported_browsers || 'Chrome,Firefox,MSIE,Safari';
+
 		var elements_to_display = self.display.split(",");
+		var display_popup = false;
 
 		for(x = 0; x < elements_to_display.length; x++) {
 			if(elements_to_display[x] == 'flash') {
@@ -50,13 +56,27 @@ var compatibility = (function() {
 			}
 
 			if(elements_to_display[x] == 'popup') {
-				getPopupBlockerEnabled();
+				display_popup = true;
+				popup_position = x;
+				add_to_display.popup = 'temp';
 			}
 
 			if(elements_to_display[x] == 'activeX') {
 				getActiveXEnabled();
 			}
 
+			if(elements_to_display[x] == 'browser') {
+				getBrowser();
+			}
+
+			//alert(elements_to_display[x]);
+
+			check_requirement();
+		}
+
+		if(display_popup == true) {
+			display_popup = false;
+			getPopupBlockerEnabled();
 			check_requirement();
 		}
 
@@ -76,12 +96,16 @@ var compatibility = (function() {
 		add_to_display.javascript = 'true';
 	}
 
-	var getPopupBlockerEnabled = function checkPopupBlocker() {
+	var getPopupBlockerEnabled = function getPopupBlockerEnabled() {
 		add_to_display.popup = 'true';
 	}
 
 	var getActiveXEnabled = function getActiveXEnabled() {
 		add_to_display.activeX = 'true';
+	}
+
+	var getBrowser = function getBrowser() {
+		add_to_display.browser = 'true';
 	}
 
 
@@ -94,14 +118,24 @@ var compatibility = (function() {
 			var section_to_add = "<div class='compatibility_row'><div class='compatibility_heading'>";
 
 			section_to_add += heading + "</div><div class='compatibility_value'>" + 
-				message + "</div><div class='compatibility_image'>"
-				+ "<img src='" + image + "'/></div></div>";
+				message + "</div>";
+			if(image != null && image != '') {
+				section_to_add += "<div class='compatibility_image'>" + "<img src='" + image + "'/></div>";
+			}
+			section_to_add += "</div>";
 
-			if(configured_display == null) {
+			if(heading == self.popup_heading && message != 'temp' && popup_position != null) {
+				configured_display[popup_position] = section_to_add;
+				popup_position = null;
+			} else {
+				configured_display.push(section_to_add);
+			}
+
+			/*if(configured_display == null) {
 				configured_display = section_to_add;
 			} else {
 				configured_display += section_to_add;
-			}
+			}*/
 		}
 	}
 	
@@ -131,7 +165,13 @@ var compatibility = (function() {
 			add_to_display.javascript = null;
 		}
 
-		if(add_to_display.popup != '' && add_to_display.popup != null) {
+		if(popup_position != null && add_to_display.popup == 'temp') {
+			heading = self.popup_heading;
+			message = 'temp';
+			add_to_display.popup = null;
+		}
+
+		if(add_to_display.popup != '' && add_to_display.popup != null && add_to_display.popup != 'temp') {
 			var popup = 0;
 	        var myPopup = window.open("./html/popup_test.html", "_blank", "directories=no,height=150,width=150,menubar=no,resizable=no,scrollbars=no,status=no,titlebar=no,top=0,location=no,left=50");
 	        heading = self.popup_heading;
@@ -166,7 +206,7 @@ var compatibility = (function() {
 
 		if(add_to_display.activeX != '' && add_to_display.activeX != null) {
 			heading = self.activeX_heading;
-			
+
 			if(typeof(window.ActiveXObject)=="undefined"){
 			      message = "Browser Not Supported";
 			      image = self.not_supported_image;
@@ -175,14 +215,60 @@ var compatibility = (function() {
 			      image = self.pass_image;
 			  }
 
-			add_to_display.activex = null;
+			add_to_display.activeX = null;
+		}
+
+		if(add_to_display.browser != '' && add_to_display.browser != null) {
+			heading = self.browser_heading;
+
+			function checkBrowser() {
+			      var N= navigator.appName, ua= navigator.userAgent, tem;
+			      var M= ua.match(/(opera|chrome|safari|firefox|msie)\/?\s*(\.?\d+(\.\d+)*)/i);
+			      if(M && (tem= ua.match(/version\/([\.\d]+)/i))!= null) M[2]= tem[1];
+			      M= M? [M[1] + ' ', M[2]]: [N, navigator.appVersion,'-?'];
+			      //alert(M);
+			      return M;
+			}
+
+			function checkBrowserName() {
+			      var N= navigator.appName, ua= navigator.userAgent, tem;
+			      var M= ua.match(/(opera|chrome|safari|firefox|msie)\/?\s*(\.?\d+(\.\d+)*)/i);
+			      if(M && (tem= ua.match(/version\/([\.\d]+)/i))!= null) M[2]= tem[1];
+			      M= M? [M[1]]: [N, navigator.appVersion,'-?'];
+			      //alert(M);
+			      return M;
+			}
+
+			message = checkBrowserName();
+
+			var supported_browsers = self.supported_browsers.split(",");
+			
+			for(i = 0; i < supported_browsers.length; i++) {
+				if(supported_browsers[i].indexOf(message) !== -1) {
+					image = self.pass_image;
+					break;
+				} else {
+					image = self.fail_image;
+				}
+			}
+
+			add_to_display.browser = null;
 		}
 
 		create_div_row(heading, message, image);
 	}
 
 	var update_page = function() {
-		document.getElementById(self.div_id).innerHTML = configured_display;
+		var final_display = null;
+		for(i = 0; i < configured_display.length; i++) {
+			//alert(configured_display[i]);
+			if(final_display == null) {
+				final_display = configured_display[i];
+			} else {
+				final_display = final_display + configured_display[i];
+			}
+		}
+		document.getElementById(self.div_id).innerHTML = final_display;
 	}
 	
 	return {
