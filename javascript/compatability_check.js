@@ -78,6 +78,7 @@ var compatibility = (function() {
 		This function creates a standard structure to allow manipulation of divs through CSS with the values
 	*/
 	var create_div_row = function(heading, message, image) {
+		//alert(heading);
 		if(heading != null && message != null) {
 			var section_to_add = "<div class='compatibility_row'><div class='compatibility_heading'>";
 
@@ -123,33 +124,32 @@ var compatibility = (function() {
 			var popup = 0;
 	        var myPopup = window.open("./html/popup_test.html", "_blank", "directories=no,height=150,width=150,menubar=no,resizable=no,scrollbars=no,status=no,titlebar=no,top=0,location=no,left=50");
 	        heading = self.popup_heading;
-	        if (!myPopup){ 
+	        if (!myPopup) { 
 	            message = "Enabled";
 	            image = self.fail_image;
-	            alert("Your browser currently has a popup blocker enabled, please disable the blocker or allow popups for this website. ERROR #1");
+	            //alert("Your browser currently has a popup blocker enabled, please disable the blocker or allow popups for this website. ERROR #1");
 	        } else {
 	            myPopup.onload = function() {
 	                setTimeout(function() {
 	                    if (myPopup.screenX === 0) {
 	                        message = "Enabled";
 	            			image = self.fail_image;
-	                        alert("Your browser currently has a popup blocker enabled, please disable the blocker or allow popups for this website. ERROR #2");
+	                        //alert("Your browser currently has a popup blocker enabled, please disable the blocker or allow popups for this website. ERROR #2");
 	                    } else {
 	                        // close the test window if popups are allowed.
 	                        this.focus();
 	                        myPopup.opener = this;
 	                        myPopup.close();
 	                        popup = 1;
-	                        message = "Enabled";
+	                        message = "Disabled";
 	            			image = self.pass_image;
+	            			create_div_row(heading, message, image);
+	            			update_page();
 	                    }
 	                }, 0);
-	            };
+	            }();
 	        }
 
-	        alert(heading);
-	        alert(message);
-	        alert(image);
 	        add_to_display.popup = null;
 		}
 
@@ -161,6 +161,7 @@ var compatibility = (function() {
 	}
 	
 	return {
-		init: init
+		init: init,
+		update_page: update_page
 	}
 }());

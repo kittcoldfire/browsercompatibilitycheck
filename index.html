@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<script type="text/javascript" src="./javascript/swfobject.js"></script>
+		<script type="text/javascript" src="./javascript/jquery183.js"></script>
 		<script type="text/javascript" src="./javascript/compatability_check.js"></script>
 		<title>Compatibility Check Demo</title>
 	</head>
@@ -13,11 +14,15 @@
 			<div class='compatibility_row'><div class='compatibility_heading'>Javascript is currently disabled. Please enable javascript to check compatibility.</div></div>
 		</noscript>
 	</body>
-</html>
 
 <script type="text/javascript">
 	compatibility.init({
 		display:"flash,javascript,popup,activeX",
-		min_flash_version:11,
+		min_flash_version:11
+	});
+
+	$(document).ready(function () {
+		compatibility.update_page();
 	});
 </script>
+</html>
