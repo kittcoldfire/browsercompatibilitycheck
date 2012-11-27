@@ -28,7 +28,7 @@ var compatibility = (function() {
 		self.background_color2 = options.background_color2 || "rgb(215, 233, 245)";
 
 		self.compatibility_update = options.compatibility_update || null;
-		console.log(self.compatibility_update);
+		//console.log(self.compatibility_update);
 
 		//Image options
 		self.pass_image = options.pass_image || './images/pass.gif';
@@ -228,31 +228,65 @@ var compatibility = (function() {
 		if(add_to_display.popup != '' && add_to_display.popup != null && add_to_display.popup != 'temp') {
 			var popup = 0;
 	        var myPopup = window.open("./html/popup_test.html", "_blank", "directories=no,height=150,width=150,menubar=no,resizable=no,scrollbars=no,status=no,titlebar=no,top=0,location=no,left=50");
+	        
 	        heading = self.popup_heading;
 	        if (!myPopup) { 
 	            message = "Enabled";
 	            image = self.fail_image;
 	            //alert("Your browser currently has a popup blocker enabled, please disable the blocker or allow popups for this website. ERROR #1");
 	        } else {
-	            myPopup.onload = function() {
-	                setTimeout(function() {
-	                    if (myPopup.screenX === 0) {
-	                        message = "Enabled";
-	            			image = self.fail_image;
-	                        //alert("Your browser currently has a popup blocker enabled, please disable the blocker or allow popups for this website. ERROR #2");
-	                    } else {
-	                        // close the test window if popups are allowed.
-	                        this.focus();
-	                        myPopup.opener = this;
-	                        myPopup.close();
-	                        popup = 1;
-	                        message = "Disabled";
-	            			image = self.pass_image;
-	            			create_div_row(heading, message, image);
-	            			update_page();
-	                    }
-	                }, 0);
-	            }();
+
+	        	//If not blocked we need to check for what browser, if we are in IE we must execute right away for some reason
+	        	var N= navigator.appName, ua= navigator.userAgent, tem;
+			    var M= ua.match(/(opera|chrome|safari|firefox|msie)\/?\s*(\.?\d+(\.\d+)*)/i);
+			    if(M && (tem= ua.match(/version\/([\.\d]+)/i))!= null) M[2]= tem[1];
+			    M= M? [M[1]]: [N, navigator.appVersion,'-?'];
+
+			    if (M.indexOf('MSIE') !== -1) {
+			    	myPopup.onload = function() {
+		                setTimeout(function() {
+		                    if (myPopup.screenX === 0) {
+		                        message = "Enabled";
+		            			image = self.fail_image;
+		            			create_div_row(heading, message, image);
+		            			update_page();
+		                        //alert("Your browser currently has a popup blocker enabled, please disable the blocker or allow popups for this website. ERROR #2");
+		                    } else {
+		                        // close the test window if popups are allowed.
+		                        this.focus();
+		                        myPopup.opener = this;
+		                        myPopup.close();
+		                        popup = 1;
+		                        message = "Disabled";
+		            			image = self.pass_image;
+		            			create_div_row(heading, message, image);
+		            			update_page();
+		                    }
+		                }, 0);
+		            }();
+			    } else {
+			    	myPopup.onload = function() {
+		                setTimeout(function() {
+		                    if (myPopup.screenX === 0 && myPopup.outerHeight == 0 && myPopup.outerWidth == 0) {
+		                        message = "Enabled";
+		            			image = self.fail_image;
+		            			create_div_row(heading, message, image);
+		            			update_page();
+		                        //alert("Your browser currently has a popup blocker enabled, please disable the blocker or allow popups for this website. ERROR #2");
+		                    } else {
+		                        // close the test window if popups are allowed.
+		                        this.focus();
+		                        myPopup.opener = this;
+		                        myPopup.close();
+		                        popup = 1;
+		                        message = "Disabled";
+		            			image = self.pass_image;
+		            			create_div_row(heading, message, image);
+		            			update_page();
+		                    }
+		                }, 25);
+		            };
+			    }
 	        }
 
 	        add_to_display.popup = null;
