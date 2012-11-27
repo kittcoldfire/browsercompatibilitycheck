@@ -22,7 +22,7 @@
     background: -moz-linear-gradient(top, white 0%, white 55%, #D5E4F3 130%);
 }
 
-#compatibility_title {
+.compatibility_title {
   padding-top:10px;
   padding-bottom:10px;
   font-weight: bold;

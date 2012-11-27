@@ -27,6 +27,9 @@ var compatibility = (function() {
 		self.background_color1 = options.background_color1 || "white";
 		self.background_color2 = options.background_color2 || "rgb(215, 233, 245)";
 
+		self.compatibility_update = options.compatibility_update || null;
+		console.log(self.compatibility_update);
+
 		//Image options
 		self.pass_image = options.pass_image || './images/pass.gif';
 		self.fail_image = options.fail_image || './images/fail.gif';
@@ -49,7 +52,7 @@ var compatibility = (function() {
 		self.browser_heading = options.browser_heading || 'Browser: ';
 		self.supported_browsers = options.supported_browsers || 'Chrome,Firefox,MSIE,Safari';
 
-		configured_display.push("<div id='compatibility_title'>" + self.compatibility_title + "</div>");
+		configured_display.push("<div class='compatibility_title'>" + self.compatibility_title + "</div>");
 		var elements_to_display = self.display.split(",");
 		var display_popup = false;
 
@@ -109,6 +112,29 @@ var compatibility = (function() {
 			background = background.replace(/rgb\(215, 233, 245\)/g, self.background_color2);
 			div.style.background = background;
 		}
+
+		for(var key in self.compatibility_update) {
+			var split = key.split("_");
+			var class_divs = document.getElementsByClassName('compatibility_' + split[0]);
+
+			//console.log(class_divs);
+
+			for(var divs in class_divs) {
+				if(class_divs[divs].style) {
+					if(parseInt(self.compatibility_update[key])){
+						self.compatibility_update[key] = parseInt(self.compatibility_update[key]) + 'px';
+					}
+					class_divs[divs].style.setProperty(split[1], self.compatibility_update[key], '');
+				}
+			}
+		}
+		
+		/*for(y = 0; y < class_divs.length; y++) {
+			var color = getStyle(class_divs[y], 'color');
+			color = color.replace(/rgb\(0, 0, 0\)/g, 'red');
+			class_divs[y].style.color = color;
+		}*/
+		//console.log(class_divs);
 	}
 
 	/*********************************************************************
@@ -299,6 +325,7 @@ var compatibility = (function() {
 		}
 
 		document.getElementById(self.div_id).innerHTML = final_display;
+		updateCompatabilityDisplayLook();
 	}
 	
 	return {
