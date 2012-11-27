@@ -20,6 +20,12 @@ var compatibility = (function() {
 		//Display options
 		self.display = options.display || 'flash,javascript,browser,activeX,popup';
 		self.display_images = options.display_images || options.display;
+		self.compatibility_title = options.compatibility_title || "Compatibility Check";
+
+		//Color options can be either normal colors like 'red' or 'green' OR they can be their HEX values
+		//a HEX value like #CC0000 for a crimson red
+		self.background_color1 = options.background_color1 || "white";
+		self.background_color2 = options.background_color2 || "rgb(215, 233, 245)";
 
 		//Image options
 		self.pass_image = options.pass_image || './images/pass.gif';
@@ -43,6 +49,7 @@ var compatibility = (function() {
 		self.browser_heading = options.browser_heading || 'Browser: ';
 		self.supported_browsers = options.supported_browsers || 'Chrome,Firefox,MSIE,Safari';
 
+		configured_display.push("<div id='compatibility_title'>" + self.compatibility_title + "</div>");
 		var elements_to_display = self.display.split(",");
 		var display_popup = false;
 
@@ -57,7 +64,7 @@ var compatibility = (function() {
 
 			if(elements_to_display[x] == 'popup') {
 				display_popup = true;
-				popup_position = x;
+				popup_position = x + 1;
 				add_to_display.popup = 'temp';
 			}
 
@@ -80,7 +87,28 @@ var compatibility = (function() {
 			check_requirement();
 		}
 
-		update_page();
+		//updateCompatabilityDisplayLook();
+		//update_page();
+	}
+
+	function getStyle(x, styleProp) {
+        if (x.currentStyle) { 
+        	var y = x.currentStyle[styleProp]; 
+        } else if (window.getComputedStyle) {
+        	var y = document.defaultView.getComputedStyle(x, null).getPropertyValue(styleProp);	
+        } 
+        return y;
+    }
+
+	var updateCompatabilityDisplayLook = function updateCompatabilityDisplayLook() {
+		var div = document.getElementById(self.div_id);
+
+		if(self.background_color1 != 'white' || self.background_color2 != 'rgb(215, 233, 245)') {
+			var background = getStyle(div, 'background');
+			background = background.replace(/white/g, self.background_color1);
+			background = background.replace(/rgb\(215, 233, 245\)/g, self.background_color2);
+			div.style.background = background;
+		}
 	}
 
 	/*********************************************************************
@@ -260,6 +288,7 @@ var compatibility = (function() {
 
 	var update_page = function() {
 		var final_display = null;
+
 		for(i = 0; i < configured_display.length; i++) {
 			//alert(configured_display[i]);
 			if(final_display == null) {
@@ -268,11 +297,13 @@ var compatibility = (function() {
 				final_display = final_display + configured_display[i];
 			}
 		}
+
 		document.getElementById(self.div_id).innerHTML = final_display;
 	}
 	
 	return {
 		init: init,
-		update_page: update_page
+		update_page: update_page,
+		updateCompatabilityDisplayLook: updateCompatabilityDisplayLook
 	}
 }());

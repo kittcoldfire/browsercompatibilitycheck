@@ -4,10 +4,10 @@
 		<script type="text/javascript" src="./javascript/swfobject.js"></script>
 		<script type="text/javascript" src="./javascript/jquery183.js"></script>
 		<script type="text/javascript" src="./javascript/compatability_check.js"></script>
+		<link rel="stylesheet" type="text/css" href="./css/compatability_check.css" />
 		<title>Compatibility Check Demo</title>
 	</head>
 	<body>
-		<h3>Compatibility Check</h3>
 		<!-- This will be replaced with the compatibility check display -->
 		<div id="compatibility" class="no-js"></div>
 		<noscript>
@@ -17,10 +17,12 @@
 
 <script type="text/javascript">
 	compatibility.init({
+
 	});
 
 	$(document).ready(function () {
 		compatibility.update_page();
+		compatibility.updateCompatabilityDisplayLook();
 	});
 </script>
 </html>
