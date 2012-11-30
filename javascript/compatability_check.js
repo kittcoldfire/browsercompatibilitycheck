@@ -267,7 +267,7 @@ var compatibility = (function() {
 			    } else {
 			    	myPopup.onload = function() {
 		                setTimeout(function() {
-		                    if (myPopup.screenX === 0 && myPopup.outerHeight == 0 && myPopup.outerWidth == 0) {
+		                    if (myPopup.screenX === 0 && myPopup.outerHeight === 0 && myPopup.outerWidth === 0) {
 		                        message = "Enabled";
 		            			image = self.fail_image;
 		            			create_div_row(heading, message, image);
